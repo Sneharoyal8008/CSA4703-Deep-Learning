@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CornLeaf AI Dashboard</title>
+<style>
+:root{--bg:#f3f8ef;--surf:#fff;--tx:#17301c;--mut:#5b6f5f;--pri:#2e7d32;--pri2:#9ccc3b;--bd:#dbe7d4;--warn:#c0392b;--amb:#d98e04;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d160f;--surf:#15221a;--tx:#e8f3e6;--mut:#9bb09f;--pri:#6fcf76;--pri2:#c6e36a;--bd:#25382a;--warn:#ff7b6b;--amb:#f2b73f}}
+:root[data-theme="dark"]{--bg:#0d160f;--surf:#15221a;--tx:#e8f3e6;--mut:#9bb09f;--pri:#6fcf76;--pri2:#c6e36a;--bd:#25382a;--warn:#ff7b6b;--amb:#f2b73f}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 "Segoe UI",system-ui,sans-serif}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+aside{background:var(--surf);border-right:1px solid var(--bd);padding:20px 14px;position:sticky;top:0;height:100vh}
+aside h1{font-size:18px;margin:0 0 22px}aside a{display:block;padding:10px 12px;border-radius:10px;color:var(--mut);text-decoration:none;margin-bottom:4px}
+aside a:hover,aside a.on{background:rgba(156,204,59,.2);color:var(--pri)}
+main{padding:24px;min-width:0}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
+header h2{margin:0;font-size:24px}header p{margin:0;color:var(--mut);font-size:13px}
+select,button{font:inherit;padding:9px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--surf);color:var(--tx)}
+button.p{background:var(--pri);color:#fff;border:0;font-weight:600;cursor:pointer}
+:root[data-theme="dark"] button.p{color:#0d160f}@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) button.p{color:#0d160f}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:18px}
+.card{background:var(--surf);border:1px solid var(--bd);border-radius:14px;padding:16px;min-width:0}
+.kpi span{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}.kpi b{display:block;font-size:28px;color:var(--pri)}.kpi small{color:var(--mut)}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-bottom:18px}
+h3{margin:0 0 12px;font-size:16px}h3 small{color:var(--mut);font-weight:400}
+.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mut);font-weight:600}
+tr.sel{background:rgba(156,204,59,.18)}.best{color:var(--pri);font-weight:700}
+.cm{display:grid;grid-template-columns:70px repeat(4,1fr);gap:4px;font-size:12px;text-align:center}.cm div{padding:12px 2px;border-radius:6px}.cm .h{padding:4px;color:var(--mut)}
+.drop{border:2px dashed var(--pri);border-radius:12px;min-height:200px;display:grid;place-items:center;text-align:center;cursor:pointer;position:relative;overflow:hidden;color:var(--mut)}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}canvas{max-width:100%;border-radius:10px;display:none}
+.bar{margin-top:10px;font-size:13px}.bar div{height:8px;background:var(--bd);border-radius:8px;margin-top:3px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--pri2));transition:width .7s}
+.pill{display:inline-block;padding:3px 12px;border-radius:99px;font-size:12px;font-weight:700}.ok{background:rgba(46,125,50,.2);color:var(--pri)}.bad{background:rgba(192,57,43,.16);color:var(--warn)}
+.sev{height:14px;border-radius:9px;background:linear-gradient(90deg,#4caf50,#d98e04,#c0392b);position:relative;margin:8px 0 4px}.sev i{position:absolute;top:-4px;width:4px;height:22px;background:var(--tx);border-radius:2px;transition:left .7s}
+ul{margin:0;padding-left:18px;color:var(--mut)}li{margin:3px 0}.note{font-size:12px;color:var(--mut);margin-top:10px}
+.hist{display:grid;gap:8px;font-size:13px}.hist div{display:flex;justify-content:space-between;border-bottom:1px solid var(--bd);padding-bottom:6px}
+@media(max-width:760px){.app{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;gap:6px;overflow-x:auto;padding:10px}aside h1{display:none}aside a{white-space:nowrap;margin:0}main{padding:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside><h1>🌽 CornLeaf AI</h1><a class="on" href="#overview">Overview</a><a href="#compare">Compare Models</a><a href="#detect">Detect &amp; Explain</a><a href="#deploy">Deployment</a><a href="#history">History</a></aside>
+<main>
+<header id="overview"><div><h2>Corn Leaf Disease Dashboard</h2><p>Sample metrics for layout. Replace with your measured results.</p></div>
+<div><label for="m" class="note">Active model </label><select id="m"></select></div></header>
+
+<div class="kpis" id="kpis"></div>
+
+<div class="g2" id="compare">
+<div class="card"><h3>Training curves <small id="ctl"></small></h3><svg id="curve" viewBox="0 0 400 200" width="100%" role="img" aria-label="Training and validation accuracy by epoch"></svg></div>
+<div class="card"><h3>Confusion matrix <small>(test set, 250 per class)</small></h3><div class="cm" id="cm"></div></div>
+</div>
+
+<div class="card" style="margin-bottom:18px"><h3>Model comparison</h3><div class="scroll"><table id="tbl"></table></div></div>
+
+<div class="g2" id="detect">
+<div class="card"><h3>Upload leaf image</h3>
+<label class="drop" id="drop"><input type="file" accept="image/*" id="f"><span id="ph">📷 Click or drop a leaf image</span><canvas id="cv"></canvas></label>
+<div style="margin-top:12px"><button class="p" id="go">Classify &amp; explain</button> <label class="note"><input type="checkbox" id="hm" checked> Show Grad-CAM heatmap</label></div></div>
+<div class="card" id="res"><h3>Result</h3><p class="note">Upload an image and press Classify.</p></div>
+</div>
+
+<div class="g2" id="deploy">
+<div class="card"><h3>TFLite quantization <small>(active model)</small></h3><div id="q"></div><p class="note">Smaller, faster models make on-phone use practical.</p></div>
+<div class="card"><h3>Project features</h3><ul><li>Variant comparison under identical training</li><li>Field-image robustness testing</li><li>Grad-CAM explainability</li><li>Severity estimation from infected area</li><li>Treatment recommendation</li><li>Android or web deployment</li></ul></div>
+</div>
+
+<div class="card" id="history"><h3>Prediction history</h3><div class="hist" id="hist"><span class="note">No predictions yet.</span></div></div>
+</main></div>
+
+<script>
+const M={
+"MobileNetV1":{a:93.1,p:92.8,r:92.9,f:92.8,pm:4.2,mb:16.9,q:4.3,ms:58,e:25},
+"MobileNetV2":{a:96.0,p:95.8,r:95.9,f:95.8,pm:3.4,mb:13.6,q:3.6,ms:44,e:22},
+"MobileNetV3-Small":{a:94.2,p:94.0,r:94.1,f:94.0,pm:2.5,mb:10.1,q:2.6,ms:21,e:26},
+"MobileNetV3-Large":{a:97.0,p:96.9,r:96.9,f:96.9,pm:5.4,mb:21.7,q:5.6,ms:49,e:20}};
+const C=["Blight","Common Rust","Gray Leaf Spot","Healthy"];
+const D={Blight:["High","Apply fungicide, rotate crops, use resistant hybrids."],"Common Rust":["Medium","Scout early; treat if pustules spread."],"Gray Leaf Spot":["Medium","Manage residue, rotate crops, consider fungicide."],Healthy:["None","Keep regular monitoring."]};
+const $=id=>document.getElementById(id);let cur="MobileNetV2";
+$("m").innerHTML=Object.keys(M).map(k=>`<option ${k==cur?"selected":""}>${k}</option>`).join("");
+$("m").onchange=e=>{cur=e.target.value;render()};
+function render(){const d=M[cur];
+$("kpis").innerHTML=[["Accuracy",d.a+"%","test set"],["F1-score",d.f+"%","macro"],["Parameters",d.pm+" M","model size"],["Latency",d.ms+" ms","per image, CPU"],["TFLite int8",d.q+" MB","from "+d.mb+" MB"]].map(k=>`<div class="card kpi"><span>${k[0]}</span><b>${k[1]}</b><small>${k[2]}</small></div>`).join("");
+const best=(k)=>Math.max(...Object.values(M).map(x=>x[k]));
+$("tbl").innerHTML="<tr><th>Model</th><th>Acc %</th><th>Prec %</th><th>Recall %</th><th>F1 %</th><th>Params (M)</th><th>FP32 (MB)</th><th>Latency (ms)</th></tr>"+Object.entries(M).map(([n,x])=>`<tr class="${n==cur?"sel":""}"><td>${n}</td><td class="${x.a==best("a")?"best":""}">${x.a}</td><td>${x.p}</td><td>${x.r}</td><td>${x.f}</td><td>${x.pm}</td><td>${x.mb}</td><td>${x.ms}</td></tr>`).join("");
+// curves
+const E=d.e,pt=(f)=>Array.from({length:E},(_,i)=>{const x=20+i*(360/(E-1)),y=180-(f(i)-60)/40*160;return x+","+y.toFixed(1)}).join(" ");
+const tr=i=>60+(d.a+2.5-60)*(1-Math.exp(-(i+1)/4)),va=i=>60+(d.a-60)*(1-Math.exp(-(i+1)/4.5))-(i%3)*.4;
+$("curve").innerHTML=`<g stroke="var(--bd)">${[0,1,2,3,4].map(i=>`<line x1="20" x2="380" y1="${20+i*40}" y2="${20+i*40}"/>`).join("")}</g><polyline fill="none" stroke="var(--pri)" stroke-width="2.5" points="${pt(tr)}"/><polyline fill="none" stroke="var(--amb)" stroke-width="2.5" stroke-dasharray="5 3" points="${pt(va)}"/><text x="24" y="196" font-size="10" fill="var(--mut)">epochs →</text><text x="250" y="14" font-size="10" fill="var(--pri)">— train</text><text x="310" y="14" font-size="10" fill="var(--amb)">-- validation</text>`;
+$("ctl").textContent="accuracy vs epoch";
+// confusion
+let h='<div class="h"></div>'+C.map(c=>`<div class="h">${c.split(" ")[0]}</div>`).join("");
+C.forEach((c,i)=>{h+=`<div class="h">${c.split(" ")[0]}</div>`;const dg=Math.round(250*(d.a/100-(i==2?.02:0)));let rem=250-dg;C.forEach((_,j)=>{let v=i==j?dg:Math.round(rem*(j==(i+1)%4?.5:j==(i+2)%4?.3:.2));const o=i==j?v/250:Math.min(.6,v/40);h+=`<div style="background:rgba(46,125,50,${o.toFixed(2)});color:${o>.5?"#fff":"var(--tx)"}">${v}</div>`})});$("cm").innerHTML=h;
+// quant
+$("q").innerHTML=[["FP32",d.mb,d.mb],["Float16",d.mb/2,d.mb],["Int8",d.q,d.mb]].map(([n,v,t])=>`<div class="bar">${n}: ${v.toFixed(1)} MB<div><i style="width:${v/t*100}%"></i></div></div>`).join("")}
+render();
+// detect
+const cv=$("cv"),x=cv.getContext("2d");let img=null,nm="";
+$("f").onchange=e=>{const f=e.target.files[0];if(!f)return;nm=f.name+f.size;const i=new Image();i.onload=()=>{img=i;cv.width=Math.min(i.width,420);cv.height=cv.width*i.height/i.width;x.drawImage(i,0,0,cv.width,cv.height);cv.style.display="block";$("ph").style.display="none"};i.src=URL.createObjectURL(f)};
+$("go").onclick=()=>{const r=$("res");if(!img){r.innerHTML='<h3>Result</h3><p style="color:var(--warn)">Please upload an image first.</p>';return}
+// DEMO ONLY: replace with real model inference
+let h=0;for(const c of nm+cur)h=(h*31+c.charCodeAt(0))>>>0;
+const top=C[h%4],conf=Math.round(M[cur].a-6+(h%50)/10),rest=100-conf,pr=C.map((c,i)=>c==top?conf:Math.round(rest/3));
+const sick=top!="Healthy",sev=sick?8+h%45:0,cx=cv.width*(.25+(h%50)/100),cy=cv.height*(.3+(h%40)/100);
+x.drawImage(img,0,0,cv.width,cv.height);
+if($("hm").checked&&sick){const g=x.createRadialGradient(cx,cy,2,cx,cy,cv.width*.28);g.addColorStop(0,"rgba(255,0,0,.65)");g.addColorStop(.5,"rgba(255,200,0,.4)");g.addColorStop(1,"rgba(0,255,0,0)");x.fillStyle=g;x.fillRect(0,0,cv.width,cv.height)}
+const d=D[top];
+r.innerHTML=`<h3>${top} <span class="pill ${sick?"bad":"ok"}">${sick?"Disease detected":"Healthy"}</span></h3><p class="note">Model: ${cur}</p>`+C.map((c,i)=>`<div class="bar">${c}: ${pr[i]}%<div><i style="width:0" data-w="${pr[i]}"></i></div></div>`).join("")+
+`<p style="margin:14px 0 0"><b>Severity:</b> ${sev}% of leaf area · risk ${d[0]}</p><div class="sev"><i style="left:0" data-l="${Math.min(sev*2,98)}"></i></div><p><b>Recommendation:</b> ${d[1]}</p><p class="note">Demo output only. Connect the trained model for real predictions.</p>`;
+setTimeout(()=>{r.querySelectorAll("i[data-w]").forEach(e=>e.style.width=e.dataset.w+"%");r.querySelectorAll("i[data-l]").forEach(e=>e.style.left=e.dataset.l+"%")},40);
+const hs=$("hist");if(hs.querySelector("span"))hs.innerHTML="";
+hs.insertAdjacentHTML("afterbegin",`<div><span>${top} (${cur})</span><span>${conf}% · ${new Date().toLocaleTimeString()}</span></div>`)};
+</script>
+</body>
+</html>
